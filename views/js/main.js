@@ -528,6 +528,7 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
+  var maxHeight = window.innerHeight; // Obtain total height to display, from this point forward do no create pizzas
   for (var i = 0; i < 200; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
@@ -535,8 +536,11 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.height = "100px";
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
-    elem.style.top = (Math.floor(i / cols) * s) + 'px';
+    var top = (Math.floor(i / cols) * s);
+    if (top > maxHeight){ break; } // If the pizza is going to render outside the screen, don't create it
+    elem.style.top = top + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
+
   }
   updatePositions();
 });
