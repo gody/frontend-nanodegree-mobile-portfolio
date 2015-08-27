@@ -1,73 +1,86 @@
-## Website Performance Optimization portfolio project
+##Udacity Website Optimization Project for Front-end Nanodegree
 
-Your challenge, if you wish to accept it (and we sure hope you will), is to optimize this online portfolio for speed! In particular, optimize the critical rendering path and make this page render as quickly as possible by applying the techniques you've picked up in the [Critical Rendering Path course](https://www.udacity.com/course/ud884).
+The current directory contains the Website Optimization Project for [Udacity Front-end Nanodegree](https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001).
 
-To get started, check out the repository, inspect the code,
+To run this project, all the code sources are in the root folder and in the img, css, js and views (here is the pizza site source code) folders. The node_modules, contains the grunt modules used for website optimization such as uglify, htmlmin, cssmin and imageoptim.
 
-### Getting started
+Finally, the production site is being hosted inside the build directory and you can access the portfolio at index.html inside the build folder. A link to the final version is [here](http://gody.github.io/frontend-nanodegree-mobile-portfolio/build/). For accessing the pizza site, you can look at build/views/pizza.html or directly in this [link](http://gody.github.io/frontend-nanodegree-mobile-portfolio/build/views/pizza.html).
 
-####Part 1: Optimize PageSpeed Insights score for index.html
+###Part 1: Pagespeed optimization
 
-Some useful tips to help you get started:
+For optimazing the index.html page to improve pagespeed insight score, a couple of steps were taken:
 
-1. Check out the repository
-1. To inspect the site on your phone, you can run a local server
+1. Resize images for max size used in webpage layout.
 
-  ```bash
-  $> cd /path/to/your-project -folder
-  $> python -m SimpleHTTPServer 8080
-  ```
+2. Set up a grunt enviroment to automate certain tasks such as:
+	1. Imageoptim: optimeze images for web pages.
+	2. Javascript Uglify: Use for compress javascript files
+	3. CSSmin: Use for compress css files
+	4. HTMLmin: Use for compress html files
+	5. All process are made in the source files and store in the build directory mantaining the website structure
 
-1. Open a browser and visit localhost:8080
-1. Download and install [ngrok](https://ngrok.com/) to make your local server accessible remotely.
+3. Put same CSS code for not render block the above the fold content
+4. Async load of google web fonts
 
-  ``` bash
-  $> cd /path/to/your-project-folder
-  $> ngrok 8080
-  ```
+Results of the pagespeed insight [here](https://developers.google.com/speed/pagespeed/insights/?url=http%3A%2F%2Fgody.github.io%2Ffrontend-nanodegree-mobile-portfolio%2Fbuild%2F).
 
-1. Copy the public URL ngrok gives you and try running it through PageSpeed Insights! Optional: [More on integrating ngrok, Grunt and PageSpeed.](http://www.jamescryer.com/2014/06/12/grunt-pagespeed-and-ngrok-locally-testing/)
+###Part 2: 60 - FPS Pizza page
 
-Profile, optimize, measure... and then lather, rinse, and repeat. Good luck!
+For achieving 60 FPS in the Pizzas [website](http://gody.github.io/frontend-nanodegree-mobile-portfolio/build/views/pizza.html), improve in rendering is needed to be done.
 
-####Part 2: Optimize Frames per Second in pizza.html
+1. As the DevTools shows up. At first, a lot of time is used in javascript functions, specifically in the updatePositions() function. The part that needed refactoring is shown.
 
-To optimize views/pizza.html, you will need to modify views/js/main.js until your frames per second rate is 60 fps or higher. You will find instructive comments in main.js.
+```
+var items = document.querySelectorAll('.mover');
+for (var i = 0; i < items.length; i++) {
+	var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+	items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+}
+```
+To optimize this, I move out the static calculation outside the for loop, improving the FPS as the calculations are reduce to 1 instead of 200 every time the page is scroll. The resulted code is shown.
+```
+var items = document.querySelectorAll('.mover');
+var scrollDistance = document.body.scrollTop / 1250; // Move out of the for loop!!
+for (var i = 0; i < items.length; i++) {
+  var phase = Math.sin(scrollDistance + (i % 5));
+  items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+}
+```
 
-You might find the FPS Counter/HUD Display useful in Chrome developer tools described here: [Chrome Dev Tools tips-and-tricks](https://developer.chrome.com/devtools/docs/tips-and-tricks).
+2. Next, I reduce the amount of pizzas loaded in the back. The default is set to be 200! As this is a large number, and no more than de 20% is needed, I cut the production of slider pizzas depending on the size (height) of the browser where the page is being render. The resulting code shown below, breaks out of the loop when a new line is going to be generated below the render area.
 
-### Optimization Tips and Tricks
-* [Optimizing Performance](https://developers.google.com/web/fundamentals/performance/ "web performance")
-* [Analyzing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp.html "analyzing crp")
-* [Optimizing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/optimizing-critical-rendering-path.html "optimize the crp!")
-* [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
-* [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
-* [Measuring with Navigation Timing](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp.html "nav timing api"). We didn't cover the Navigation Timing API in the first two lessons but it's an incredibly useful tool for automated page profiling. I highly recommend reading.
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads.html">The fewer the downloads, the better</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer.html">Reduce the size of text</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization.html">Optimize images</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching.html">HTTP caching</a>
+```
+document.addEventListener('DOMContentLoaded', function() {
+	var cols = 8;
+	var s = 256;
+	var maxHeight = window.innerHeight; // Obtain total height to display, from this point forward do no create pizzas
+	for (var i = 0; i < 200; i++) {
+	  var elem = document.createElement('img');
+	  elem.className = 'mover';
+	  elem.src = "images/pizza.png";
+	  elem.style.height = "100px";
+	  elem.style.width = "73.333px";
+	  elem.basicLeft = (i % cols) * s;
+	  var top = (Math.floor(i / cols) * s);
+	  if (top > maxHeight){ break; } // If the pizza is going to render outside the screen, don't create it
+	  elem.style.top = top + 'px';
+	  document.querySelector("#movingPizzas1").appendChild(elem);
 
-### Customization with Bootstrap
-The portfolio was built on Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> framework. All custom styles are in `dist/css/portfolio.css` in the portfolio repo.
+	}
+	updatePositions();
+}
+ ```
 
-* <a href="http://getbootstrap.com/css/">Bootstrap's CSS Classes</a>
-* <a href="http://getbootstrap.com/components/">Bootstrap's Components</a>
+3. The last improvement is to achive the load time when resizing pizzas. Here the problem is in the layout-style order in the resizing function. To solve this, I noted that all the pizzas are going to be the same size, so calculating the new size each time inside of the loop is not an option. Taking this out, reduces in 10x the load time.
+Code improvement shown below.
 
-### Sample Portfolios
-
-Feeling uninspired by the portfolio? Here's a list of cool portfolios I found after a few minutes of Googling.
-
-* <a href="http://www.reddit.com/r/webdev/comments/280qkr/would_anybody_like_to_post_their_portfolio_site/">A great discussion about portfolios on reddit</a>
-* <a href="http://ianlunn.co.uk/">http://ianlunn.co.uk/</a>
-* <a href="http://www.adhamdannaway.com/portfolio">http://www.adhamdannaway.com/portfolio</a>
-* <a href="http://www.timboelaars.nl/">http://www.timboelaars.nl/</a>
-* <a href="http://futoryan.prosite.com/">http://futoryan.prosite.com/</a>
-* <a href="http://playonpixels.prosite.com/21591/projects">http://playonpixels.prosite.com/21591/projects</a>
-* <a href="http://colintrenter.prosite.com/">http://colintrenter.prosite.com/</a>
-* <a href="http://calebmorris.prosite.com/">http://calebmorris.prosite.com/</a>
-* <a href="http://www.cullywright.com/">http://www.cullywright.com/</a>
-* <a href="http://yourjustlucky.com/">http://yourjustlucky.com/</a>
-* <a href="http://nicoledominguez.com/portfolio/">http://nicoledominguez.com/portfolio/</a>
-* <a href="http://www.roxannecook.com/">http://www.roxannecook.com/</a>
-* <a href="http://www.84colors.com/portfolio.html">http://www.84colors.com/portfolio.html</a>
+```
+  function changePizzaSizes(size) {
+    var allPizzas = document.querySelectorAll(".randomPizzaContainer");
+    var dx = determineDx(allPizzas[1], size);
+    var newwidth = (allPizzas[1].offsetWidth + dx) + 'px';
+    for (var i = 0; i < allPizzas.length; i++) {
+      allPizzas[i].style.width = newwidth;
+    }
+  }
+```
