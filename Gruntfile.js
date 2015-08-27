@@ -8,29 +8,54 @@ module.exports = function(grunt){
 				},
 				files: [{
 					expand: true,
-					cwd: 'src/images',
+					cwd: 'img/',
 					src: ['**/*.{png,jpg,gif}'],
-					dest: 'dist/'
+					dest: 'build/img'
+				}]
+			},
+			pizza: {
+				options: {
+					optimizationLevel: 5
+				},
+				files: [{
+					expand: true,
+					cwd: 'views/images/',
+					src: ['**/*.{png,jpg,gif}'],
+					dest: 'build/views/images/'
 				}]
 			}
 		},
 		uglify: {
-			my_target: {
+			dist: {
 				files: {
-					'production/js/scripts.min.js': ['src/input1.js', 'src/input2.js'],
+					'build/js/scripts.min.js': ['js/perfmatters.js'],
+				}
+			},
+			pizza: {
+				files: {
+					'build/views/js/scripts.min.js': ['views/js/main.js'],
 				}
 			}
 		},
 		cssmin: {
-			target: {
+			dist: {
 				files: [{
 					expand: true,
-					cwd: 'release/css',
+					cwd: 'css',
 					src: ['*.css', '!*.min.css'],
-					dest: 'release/css',
+					dest: 'build/css',
 					ext: '.min.css'
 				}],
 			},
+			pizza: {
+				files: [{
+					expand: true,
+					cwd: 'views/css',
+					src: ['*.css', '!*.min.css'],
+					dest: 'build/views/css',
+					ext: '.min.css'
+				}],
+			}
 		},
 		htmlmin: {
 			dist: {
@@ -40,10 +65,18 @@ module.exports = function(grunt){
 				},
 				files: [{
 					expand: true,
-					cwd: 'src',
-					src: '**/*.html',
-					dest: 'dist/'
+					src: '*.html',
+					dest: 'build/'
 				}]
+			},
+			pizza: {
+				options: {
+					removeComments: true,
+					collapseWhitespace: true
+				},
+				files: {
+					'build/views/pizza.html':['views/pizza.html'],
+				}
 			}
 		},
 	});
@@ -52,4 +85,6 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-htmlmin');
+
+	grunt.registerTask('default',['imagemin', 'uglify', 'cssmin', 'htmlmin']);
 };
