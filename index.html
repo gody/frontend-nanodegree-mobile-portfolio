@@ -7,13 +7,24 @@
     <meta name="author" content=" FILL ME IN ">
     <title>Cameron Pittman: Portfolio</title>
 
-    <!-- Hmm, what is the impact of web fonts on speed? Measure it... -->
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
-
     <!-- Added media query for optimize render blocking -->
-    <link href="css/style.min.css" rel="stylesheet" media="screen">
-    <link href="css/print.min.css" rel="stylesheet" media="print">
-    <link href="css/smartphone-portrait.min.css" rel="stylesheet" media="screen and (max-width:480px)">
+    <style type="text/css">
+
+      body { margin: 0; font-size: 14px; line-height: 1.61; font-weight: 400; font-family: 'Open Sans', sans-serif; color: #333; background: #fff;}
+
+      header, footer, .container { max-width: 45em; margin: 0 auto; }
+
+      header { padding: 0 0.5em; color: #C90B0B; }
+      header img { border-radius: 40px; float: left; }
+      header p { font-size:1.5em; font-weight: bold; padding-left: 4em;}
+      header p span { font-size: 0.8em; font-weight: normal;}
+      .hero { padding: 2em; background-color: #f8f8f8; font-size:1.2em;
+        border-bottom: 1px solid #ccc;
+        border-top: 1px solid #ccc;
+      }
+      .content { padding: 1em 1em; }
+      .content li { list-style-type: none; font-size: 1.1em;}
+    </style>
 
     <script async>
       (function(w,g){w['GoogleAnalyticsObject']=g;
@@ -24,7 +35,21 @@
       ga('send', 'pageview');
     </script>
     <script async src="http://www.google-analytics.com/analytics.js"></script>
-    <script async src="js/perfmatters.js"></script>
+    <script async src="js/scripts.min.js"></script>
+    <!-- -->
+    <script>
+       WebFontConfig = {
+          google: {
+            families: ['Open Sans:400,700']
+          }
+       };
+
+       (function(d) {
+          var wf = d.createElement('script'), s = d.scripts[0];
+          wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
+          s.parentNode.insertBefore(wf, s);
+       })(document);
+    </script>
   </head>
 
   <body>
@@ -67,7 +92,11 @@
     </div>
 
     <footer>
-      <p>&copy; Web Performance 2014 <span id="crp-stats"></span></p>
+      <p>&copy; Web Performance 2015 <span id="crp-stats"></span></p>
     </footer>
   </body>
 </html>
+
+<link href="css/style.min.css" rel="stylesheet" media="screen">
+<link href="css/print.min.css" rel="stylesheet" media="print">
+<link href="css/smartphone-portrait.min.css" rel="stylesheet" media="screen and (max-width:480px)">
