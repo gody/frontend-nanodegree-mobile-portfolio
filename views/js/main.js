@@ -449,11 +449,14 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
+  // Optimize performance of this function, all pizzas are the same size, so
+  // to calculate the newsize, we only need to do the math in 1 of them.
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    var allPizzas = document.querySelectorAll(".randomPizzaContainer");
+    var dx = determineDx(allPizzas[1], size);
+    var newwidth = (allPizzas[1].offsetWidth + dx) + 'px';
+    for (var i = 0; i < allPizzas.length; i++) {
+      allPizzas[i].style.width = newwidth;
     }
   }
 
@@ -525,6 +528,7 @@ function updatePositions() {
 window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
+// Here we are going to optimize the number of pizzas to be created, based on the dimensions of the viewport
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
